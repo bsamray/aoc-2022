@@ -2,17 +2,28 @@ const input = fs.readFileSync("input.txt", "utf8");
 
 const elfFoodCalList = input.split('\n\n');
 
-let calsCarried: number[] = [];
+let one: number = 0;
+let two: number = Number.MIN_VALUE;
+let three: number = Number.MIN_VALUE;
 
 for (let i: number = 1; i <= elfFoodCalList.length; i++) {
   const elfFoodCals = elfFoodCalList[i-1];
   let thisCalCount: number = 0;
   for (let cal of elfFoodCals.split('\n')) {
-    thisCalCount += parseFloat(cal)
+    thisCalCount += parseFloat(cal);
   }
-  calsCarried.push(thisCalCount);
+  if (thisCalCount > one) {
+    three = two;
+    two = one;
+    one = thisCalCount;
+  }
+  if (thisCalCount < one && thisCalCount > two) {
+    three = two;
+    two = thisCalCount;
+  }
+  if (thisCalCount < two && thisCalCount > three) {
+    three = thisCalCount;
+  }
+
 }
-
-calsCarried.sort((a,b) => (a > b ? -1 : 1));
-
-console.log(`Sum of top three calories - ${calsCarried[0] + calsCarried[1] + calsCarried[2]}`);
+console.log(`Sum of top three calories - ${one + two + three}}`);

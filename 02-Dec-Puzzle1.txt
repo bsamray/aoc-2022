@@ -1,0 +1,30 @@
+const input = fs.readFileSync("input_day2.txt", "utf8");
+const movesOfRound = input.split('\n');
+
+const moveBasedScore: Record<string, number> = {
+  X: 1,
+  Y: 2,
+  Z: 3
+};
+
+const outcomeBasedScore: Record<string, number> = {
+  'A X': 3,
+  'A Y': 6,
+  'A Z': 0,
+  'B X': 0,
+  'B Y': 3,
+  'B Z': 6,
+  'C X': 6,
+  'C Y': 0,
+  'C Z': 3
+};
+
+let totalScore: number = 0;
+for (let move of movesOfRound) {
+
+  const myMove = move.split(" ")[1];
+  const roundScore = outcomeBasedScore[move] + moveBasedScore[myMove];
+  //console.log(roundScore);
+  totalScore += roundScore;
+}
+console.log(totalScore);

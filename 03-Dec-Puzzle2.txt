@@ -1,0 +1,19 @@
+const input = fs.readFileSync("input_day3.txt", "utf8");
+const sacks: string[] = input.split("\n");
+let tracker: Record<string, Set<number>> = {};
+let totalPriority: number = 0;
+
+for (let i = 1; i <= sacks.length; i++) {
+
+  for (let ch of sacks[i-1]) {
+    tracker[ch] = tracker[ch] ? tracker[ch].add(i % 3) : new Set<number>([i%3]); 
+    if (tracker[ch].size === 3) {
+      totalPriority += ch.match(/[a-z]/) ? ch.charCodeAt(0) - 96 : ch.charCodeAt(0) - 38;
+      break;
+    }
+  }
+  if (i % 3 === 0) {
+    tracker = {};
+  }
+}
+console.log(totalPriority); 

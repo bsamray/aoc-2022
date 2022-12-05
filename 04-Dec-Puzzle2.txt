@@ -1,0 +1,21 @@
+function checkOverlap (sections: string[]) {
+  return (parseInt(sections[0], 10) >= parseInt(sections[2], 10) && parseInt(sections[0], 10) <= parseInt(sections[3], 10))
+    || (parseInt(sections[1], 10) >= parseInt(sections[2], 10) && parseInt(sections[1], 10) <= parseInt(sections[3], 10))
+    || (parseInt(sections[2], 10) >= parseInt(sections[0], 10) && parseInt(sections[2], 10) <= parseInt(sections[1], 10))
+    || (parseInt(sections[3], 10) >= parseInt(sections[0], 10) && parseInt(sections[3], 10) <= parseInt(sections[1], 10));
+}
+
+const input = fs.readFileSync("input_day4.txt", "utf8");
+const assignmentPairs: string[] = input.split("\n");
+
+let overlappingPairCount = 0;
+for (let pair of assignmentPairs) {
+
+  const sections = pair.replaceAll('-', ',').split(',');
+  if (checkOverlap(sections)) {
+    console.log(sections)
+    overlappingPairCount++; 
+  }
+}
+
+console.log(overlappingPairCount);

@@ -1,0 +1,38 @@
+let stacks: string[][] = [];
+
+const input = fs.readFileSync("input_day5.txt", "utf8").split("\n\n");
+
+const stacksInput: string = input[0];
+const stackCount = parseInt(stacksInput.substring(stacksInput.length - 2, stacksInput.length - 1));
+for (let i = 0; i < stackCount; i++) {
+  stacks.push([]);
+}
+const rows = stacksInput.split("\n");
+for (let i = 0; i < rows.length; i++) {
+
+  const thisRowCrates = rows[i].match(/.{1,4}/g);
+
+  if (thisRowCrates) {
+    for (let j = 0; j < thisRowCrates.length; j++) {
+      const crateCandidate = thisRowCrates[j].trim();
+      if (crateCandidate && !['1','2','3','4','5','6','7','8','9'].includes(crateCandidate)) {
+        stacks[j].push(crateCandidate);
+      }
+    }
+  }
+}
+
+const instructions: string = input[1];
+for (let instruction of instructions.split('\n')) {
+  const instParts = instruction.split(' ');
+  const count = parseInt(instParts[1], 10);
+  const fromStack = parseInt(instParts[3], 10) - 1;
+  const toStack = parseInt(instParts[5], 10) - 1;
+
+  for (let i = 0; i < count; i++) {
+    const item = stacks[fromStack].shift();
+    stacks[toStack].unshift(item as string);
+  }
+}
+const final = stacks.map(stack => stack[0]).join('').replace(/\[|]/g, '');
+console.log(final);

@@ -1,0 +1,27 @@
+function hasUniqueElems (arr: string[]): boolean {
+  return arr.length === new Set(arr).size;
+}
+
+const input = fs.readFileSync("inp.txt", "utf8")
+
+let noDupIndex: number = -1;
+let tracker: string[] = Array.from(input.substring(0, 3));
+
+for (let i = 3; i < input.length; i++) {
+  const thisChar: string = input.substring(i, i + 1);
+  if (i === 3) {
+    tracker.push(thisChar);
+    if (hasUniqueElems(tracker)) {
+      noDupIndex = i + 1;
+      break;
+    }
+  } else {
+    tracker.shift();
+    tracker.push(thisChar);
+    if (hasUniqueElems(tracker)) {
+      noDupIndex = i + 1;
+      break;
+    }
+  }
+}
+console.log(noDupIndex);

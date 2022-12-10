@@ -1,0 +1,75 @@
+import fs from 'fs';
+
+let dirSizeMap: Map<string, number> = new Map();
+let dirs: string[] = [];
+
+function identifyText(text: string) {
+  if (text === '$ cd ..') {
+    return 'up';
+  } else if (text === '$ cd /') {
+    return 'root';
+  } else if (text.includes('$ cd')) {
+    return 'cd';
+  } else if (text === '$ ls') {
+    return 'ls';
+  } else if (text.startsWith('dir ')) {
+    return 'dir';
+  } else if (/^\d/.test(text)) {
+    return 'file';
+  }
+  return;
+}
+
+function calculateTotDirSizes(dirSizeMap: Map<string, number>) {
+  let problem1Sum: number = 0;
+  for (let value of dirSizeMap.values()) {
+    if (value <= 100000) {
+      problem1Sum += value;
+    }
+  }
+  return problem1Sum;
+}
+
+function calculateDirtoDel(dirSizeMap: Map<string, number>) {
+  const curSize: number = dirSizeMap.get('') as number;
+  const available: number = 70000000 - curSize;
+  const deficit: number = 30000000 - available;
+  let minSize = Number.MAX_VALUE;
+  for (const v of dirSizeMap.values()) {
+    if (v >= deficit && v < minSize) {
+      minSize = v;
+    }
+  }
+  return minSize;
+}
+
+const texts: string[] = fs.readFileSync('input_day7.txt', 'utf8').split('\n');
+
+for (let text of texts) {
+  text = text.trim();
+  const instn = identifyText(text);
+  switch (instn) {
+    case 'root':
+      dirSizeMap.set('', 0);
+      dirs.push('');
+      break;
+    case 'up':
+      dirs.pop();
+      break;
+    case 'cd':
+      let dir = text.split(' ').pop() as string;
+      const dirLoc = dirs.join('').concat('/').concat(dir); 
+      dirSizeMap.set(dirLoc, 0);
+      dirs.push(dirLoc);
+      break;
+    case 'file':
+      const fileSize: number = parseInt(text.split(' ').shift() as string, 10);
+      dirs.map((dir) =>
+        dirSizeMap.set(dir, (dirSizeMap.get(dir) as number) + fileSize)
+      );
+      break;
+  }
+}
+console.log(dirSizeMap); 
+console.log(calculateTotDirSizes(dirSizeMap));
+console.log(calculateDirtoDel(dirSizeMap));

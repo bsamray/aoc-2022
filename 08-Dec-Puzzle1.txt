@@ -1,0 +1,66 @@
+import fs from "fs";
+
+const rows: string[] = fs.readFileSync("input_day8.txt", "utf8").split("\n");
+const rowCt = rows.length;
+const colCt = rows[0].split("").length;
+const trees: number[][] = [];
+
+function buildTrees(): void {
+  for (let i = 0; i < rowCt; i++) {
+    trees.push(rows[i].split("").map((elem) => parseInt(elem, 10)));
+  }
+}
+
+function isVisible(height: number, row: number, col: number): boolean {
+  let visibility: boolean = true;
+  for (let i = 0; i < col; i++) {
+    if (trees[row][i] >= height) {
+      visibility = false;
+      break;
+    }
+  }
+  if (!visibility) {
+    visibility = true;
+    for (let i = col + 1; i < colCt; i++) {
+      if (trees[row][i] >= height) {
+        visibility = false;
+        break;
+      }
+    }
+  }
+  if (!visibility) {
+    visibility = true;
+    for (let i = 0; i < row; i++) {
+      if (trees[i][col] >= height) {
+        visibility = false;
+        break;
+      }
+    }
+  }
+  if (!visibility) {
+    visibility = true;
+    for (let i = row + 1; i < rowCt; i++) {
+      if (trees[i][col] >= height) {
+        visibility = false;
+        break;
+      }
+    }
+  }
+
+  return visibility;
+}
+
+function calculateVisibileCount(): number {
+  let visibleCt = colCt * 2 + (rows.length - 2) * 2;
+  for (let i = 1; i < rowCt - 1; i++) {
+    for (let j = 1; j < colCt - 1; j++) {
+      if (isVisible(trees[i][j], i, j)) {
+        visibleCt++;
+      }
+    }
+  }
+  return visibleCt;
+}
+
+buildTrees();
+console.log(calculateVisibileCount());

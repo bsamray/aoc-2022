@@ -1,0 +1,121 @@
+import fs from "fs";
+
+const rows: string[] = fs.readFileSync("input_day8.txt", "utf8").split("\n");
+const rowCt = rows.length;
+const colCt = rows[0].split("").length;
+const trees: number[][] = [];
+
+function buildTrees(): void {
+  for (let i = 0; i < rowCt; i++) {
+    trees.push(rows[i].split("").map((elem) => parseInt(elem, 10)));
+  }
+}
+
+function isVisible(height: number, row: number, col: number): boolean {
+  let visibility: boolean = true;
+  for (let i = 0; i < col; i++) {
+    if (trees[row][i] >= height) {
+      visibility = false;
+      break;
+    }
+  }
+  if (!visibility) {
+    visibility = true;
+    for (let i = col + 1; i < colCt; i++) {
+      if (trees[row][i] >= height) {
+        visibility = false;
+        break;
+      }
+    }
+  }
+  if (!visibility) {
+    visibility = true;
+    for (let i = 0; i < row; i++) {
+      if (trees[i][col] >= height) {
+        visibility = false;
+        break;
+      }
+    }
+  }
+  if (!visibility) {
+    visibility = true;
+    for (let i = row + 1; i < rowCt; i++) {
+      if (trees[i][col] >= height) {
+        visibility = false;
+        break;
+      }
+    }
+  }
+
+  return visibility;
+}
+
+function calculateVisibileCount(): number {
+  let visibleCt = colCt * 2 + (rows.length - 2) * 2;
+  for (let i = 1; i < rowCt - 1; i++) {
+    for (let j = 1; j < colCt - 1; j++) {
+      if (isVisible(trees[i][j], i, j)) {
+        visibleCt++;
+      }
+    }
+  }
+  return visibleCt;
+}
+
+function getScenicScore(height: number, row: number, col: number): number {
+  let score: number = 1;
+  for (let i = col - 1; i >= 0; i--) {
+    if (trees[row][i] >= height) {
+      score *= col - i;
+      break;
+    } else if (i === 0) {
+      score *= col;
+    }
+  }
+
+  for (let i = col + 1; i < colCt; i++) {
+    if (trees[row][i] >= height) {
+      score *= i - col;
+      break;
+    } else if (i === colCt - 1) {
+      score *= i - col;
+    }
+  }
+
+  for (let i = row - 1; i >= 0; i--) {
+    if (trees[i][col] >= height) {
+      score *= row - i;
+      break;
+    } else if (i === 0) {
+      score *= row;
+    }
+  }
+
+  for (let i = row + 1; i < rowCt; i++) {
+    if (trees[i][col] >= height) {
+      score *= i - row;
+      break;
+    } else if (i === rowCt - 1) {
+      score *= i - row;
+    }
+  }
+
+  return score;
+}
+
+function calculateBestScenicScore(): number {
+  let bestScore: number = 0;
+  for (let i = 1; i < rowCt - 1; i++) {
+    for (let j = 1; j < colCt - 1; j++) {
+      const thisScore: number = getScenicScore(trees[i][j], i, j);
+      if (thisScore > bestScore) {
+        bestScore = thisScore;
+      }
+    }
+  }
+  return bestScore;
+}
+
+buildTrees();
+//calculateVisibileCount();
+console.log(calculateBestScenicScore());

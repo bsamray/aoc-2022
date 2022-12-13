@@ -1,0 +1,86 @@
+import fs from "fs";
+
+let headPos: number[][] = [[0, 0]];
+let tailPos: number[][] = [[0, 0]];
+
+function findDistance(pos1: number[], pos2: number[]): number {
+  return Math.sqrt(
+    Math.pow(pos2[0] - pos1[0], 2) + Math.pow(pos2[1] - pos1[1], 2)
+  );
+}
+
+function process(instns: string[]): void {
+  for (let instn of instns) {
+    const parts: string[] = instn.split(" ");
+    const dir: string = parts[0];
+    const moveBy: number = parseInt(parts[1], 10);
+
+    let newHeadPos: number[];
+    let newTailPos: number[];
+
+    switch (dir) {
+      case "R":
+        for (let i = 0; i < moveBy; i++) {
+          let curHeadPos: number[] = headPos[headPos.length - 1];
+          let curTailPos: number[] = tailPos[tailPos.length - 1];
+          newHeadPos = [curHeadPos[0] + 1, curHeadPos[1]];
+          headPos.push(newHeadPos);
+          const dist = findDistance(newHeadPos, curTailPos);
+          if (dist > Math.sqrt(2)) {
+            newTailPos = [newHeadPos[0] - 1, newHeadPos[1]];
+            tailPos.push(newTailPos);
+          }
+        }
+        break;
+      case "L":
+        for (let i = 0; i < moveBy; i++) {
+          let curHeadPos: number[] = headPos[headPos.length - 1];
+          let curTailPos: number[] = tailPos[tailPos.length - 1];
+          newHeadPos = [curHeadPos[0] - 1, curHeadPos[1]];
+          headPos.push(newHeadPos);
+          const dist = findDistance(newHeadPos, curTailPos);
+          if (dist > Math.sqrt(2)) {
+            newTailPos = [newHeadPos[0] + 1, newHeadPos[1]];
+            tailPos.push(newTailPos);
+          }
+        }
+        break;
+      case "U":
+        for (let i = 0; i < moveBy; i++) {
+          let curHeadPos: number[] = headPos[headPos.length - 1];
+          let curTailPos: number[] = tailPos[tailPos.length - 1];
+          newHeadPos = [curHeadPos[0], curHeadPos[1] + 1];
+          headPos.push(newHeadPos);
+          const dist = findDistance(newHeadPos, curTailPos);
+          if (dist > Math.sqrt(2)) {
+            newTailPos = [newHeadPos[0], newHeadPos[1] - 1];
+            tailPos.push(newTailPos);
+          }
+        }
+        break;
+      case "D":
+        for (let i = 0; i < moveBy; i++) {
+          let curHeadPos: number[] = headPos[headPos.length - 1];
+          let curTailPos: number[] = tailPos[tailPos.length - 1];
+          newHeadPos = [curHeadPos[0], curHeadPos[1] - 1];
+          headPos.push(newHeadPos);
+          const dist = findDistance(newHeadPos, curTailPos);
+          if (dist > Math.sqrt(2)) {
+            newTailPos = [newHeadPos[0], newHeadPos[1] + 1];
+            tailPos.push(newTailPos);
+          }
+        }
+        break;
+    }
+  }
+}
+
+const instns: string[] = fs.readFileSync("input_day9.txt", "utf8").split("\n");
+process(instns);
+
+console.log(
+  tailPos
+    .map((j) => JSON.stringify(j))
+    .filter((el, i, arr) => i === arr.indexOf(el))
+    .map((k) => JSON.parse(k))
+);

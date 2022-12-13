@@ -1,0 +1,174 @@
+import fs from "fs";
+
+let headPos: number[][] = [[0, 0]];
+let tail1Pos: number[][] = [[0, 0]];
+let tail2Pos: number[][] = [[0, 0]];
+let tail3Pos: number[][] = [[0, 0]];
+let tail4Pos: number[][] = [[0, 0]];
+let tail5Pos: number[][] = [[0, 0]];
+let tail6Pos: number[][] = [[0, 0]];
+let tail7Pos: number[][] = [[0, 0]];
+let tail8Pos: number[][] = [[0, 0]];
+let tail9Pos: number[][] = [[0, 0]];
+
+function findDistance(pos1: number[], pos2: number[]): number {
+  return Math.sqrt(
+    Math.pow(pos2[0] - pos1[0], 2) + Math.pow(pos2[1] - pos1[1], 2)
+  );
+}
+
+function iterateMoves(
+  steps: number,
+  cb1: (n: number) => number,
+  cb2: (n: number) => number,
+  cb3: (n: number) => number,
+  cb4: (n: number) => number
+): void {
+  let newHeadPos: number[];
+  let newTail1Pos: number[] = [];
+  let newTail2Pos: number[] = [];
+  let newTail3Pos: number[] = [];
+  let newTail4Pos: number[] = [];
+  let newTail5Pos: number[] = [];
+  let newTail6Pos: number[] = [];
+  let newTail7Pos: number[] = [];
+  let newTail8Pos: number[] = [];
+  let newTail9Pos: number[] = [];
+
+  for (let i = 0; i < steps; i++) {
+    let curHeadPos: number[] = headPos[headPos.length - 1];
+    let curTail1Pos: number[] = tail1Pos[tail1Pos.length - 1];
+
+    newHeadPos = [cb1(curHeadPos[0]), cb2(curHeadPos[1])];
+    headPos.push(newHeadPos);
+    let dist = findDistance(newHeadPos, curTail1Pos);
+    if (dist > Math.sqrt(2)) {
+      newTail1Pos = [cb3(newHeadPos[0]), cb4(newHeadPos[1])];
+      
+      tail1Pos.push(newTail1Pos);
+    }
+    //console.log(dist + '---' + tail1Pos);
+
+    let curTail2Pos: number[] = tail2Pos[tail2Pos.length - 1];
+    dist = findDistance(newTail1Pos, curTail2Pos);
+    if (dist > Math.sqrt(2)) {
+      newTail2Pos = [cb3(newTail1Pos[0]), cb4(newTail1Pos[1])];
+      tail2Pos.push(newTail2Pos);
+    }
+
+    let curTail3Pos: number[] = tail3Pos[tail3Pos.length - 1];
+    dist = findDistance(newTail2Pos, curTail3Pos);
+    if (dist > Math.sqrt(2)) {
+      newTail3Pos = [cb3(newTail2Pos[0]), cb4(newTail2Pos[1])];
+      
+      tail3Pos.push(newTail3Pos);
+    }
+
+    let curTail4Pos: number[] = tail4Pos[tail4Pos.length - 1];
+    dist = findDistance(newTail3Pos, curTail4Pos);
+    if (dist > Math.sqrt(2)) {
+      newTail4Pos = [cb3(newTail3Pos[0]), cb4(newTail3Pos[1])];
+
+      tail4Pos.push(newTail4Pos);
+    }
+
+    let curTail5Pos: number[] = tail5Pos[tail5Pos.length - 1];
+    dist = findDistance(newTail4Pos, curTail5Pos);
+    if (dist > Math.sqrt(2)) {
+      newTail5Pos = [cb3(newTail4Pos[0]), cb4(newTail4Pos[1])];
+      
+      tail5Pos.push(newTail5Pos);
+    }
+
+    let curTail6Pos: number[] = tail6Pos[tail6Pos.length - 1];
+    dist = findDistance(newTail5Pos, curTail6Pos);
+    if (dist > Math.sqrt(2)) {
+      newTail6Pos = [cb3(newTail5Pos[0]), cb4(newTail5Pos[1])];
+       
+      tail6Pos.push(newTail6Pos);
+    }
+
+    let curTail7Pos: number[] = tail7Pos[tail7Pos.length - 1];
+    dist = findDistance(newTail6Pos, curTail7Pos);
+    if (dist > Math.sqrt(2)) {
+      newTail7Pos = [cb3(newTail6Pos[0]), cb4(newTail6Pos[1])];
+      
+      tail7Pos.push(newTail7Pos);
+    }
+
+    let curTail8Pos: number[] = tail8Pos[tail8Pos.length - 1];
+    dist = findDistance(newTail7Pos, curTail8Pos);
+    if (dist > Math.sqrt(2)) {
+      newTail8Pos = [cb3(newTail7Pos[0]), cb4(newTail7Pos[1])];
+      
+      tail8Pos.push(newTail8Pos);
+    }
+
+    let curTail9Pos: number[] = tail9Pos[tail9Pos.length - 1];
+    dist = findDistance(newTail8Pos, curTail9Pos);
+    if (dist > Math.sqrt(2)) {
+      newTail9Pos = [cb3(newTail8Pos[0]), cb4(newTail8Pos[1])];
+      
+      tail9Pos.push(newTail9Pos);
+    }
+  }
+}
+
+function process(instns: string[]): void {
+  for (let instn of instns) {
+    const parts: string[] = instn.split(" ");
+    const dir: string = parts[0];
+    const steps: number = parseInt(parts[1], 10);
+
+    switch (dir) {
+      case "R":
+        iterateMoves(
+          steps,
+          (j: number) => j + 1,
+          (j: number) => j,
+          (j: number) => j - 1,
+          (j: number) => j
+        );
+        break;
+      case "L":
+        iterateMoves(
+          steps,
+          (j: number) => j - 1,
+          (j: number) => j,
+          (j: number) => j + 1,
+          (j: number) => j
+        );
+        break;
+      case "U":
+        iterateMoves(
+          steps,
+          (j: number) => j,
+          (j: number) => j + 1,
+          (j: number) => j,
+          (j: number) => j - 1
+        );
+        break;
+      case "D":
+        iterateMoves(
+          steps,
+          (j: number) => j,
+          (j: number) => j - 1,
+          (j: number) => j,
+          (j: number) => j + 1
+        );
+        break;
+    }
+  }
+}
+
+const instns: string[] = fs.readFileSync("inp.txt", "utf8").split("\n");
+process(instns);
+
+console.log(tail9Pos.length); 
+
+console.log(
+  tail9Pos
+    .map((j) => JSON.stringify(j))
+    .filter((el, i, arr) => i === arr.indexOf(el))
+    .map((k) => JSON.parse(k))
+);

@@ -1,0 +1,36 @@
+import fs from "fs";
+
+function process(instns: string[]): Map<number, number> {
+  let x: number = 1;
+  let cycles: number = 0;
+  let cyclesToX: Map<number, number> = new Map([[0, 0]]);
+
+  for (let instn of instns) {
+    if (instn.startsWith("noop")) {
+      cycles++;
+    } else if (instn.startsWith("addx")) {
+      const xIncrement: number = parseInt(instn.split(" ")[1], 10);
+      cycles++;
+      cyclesToX.set(cycles, x);
+      cycles++;
+      x += xIncrement;
+    }
+    cyclesToX.set(cycles, x);
+  }
+  return cyclesToX;
+}
+
+function calculateSignalStrenth(cyclesToX: Map<number, number>): void {
+  const ss20: number = cyclesToX.get(19) as number * 20;
+  const ss60: number = cyclesToX.get(59) as number * 60;
+  const ss100: number = cyclesToX.get(99) as number * 100;
+  const ss140: number = cyclesToX.get(139) as number * 140;
+  const ss180: number = cyclesToX.get(179) as number * 180;
+  const ss220: number = cyclesToX.get(219) as number * 220;
+
+  console.log(ss20 + ss60 + ss100 + ss140 + ss180 + ss220);
+}
+
+const instns: string[] = fs.readFileSync("input_day10.txt", "utf8").split("\n");
+const cyclesToX: Map<number, number> = process(instns);
+calculateSignalStrenth(cyclesToX);

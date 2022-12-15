@@ -1,0 +1,47 @@
+import fs from "fs";
+
+let pixels: string = "";
+let arr40: string = "";
+
+function fill(ch: string): void {
+  arr40 = arr40.concat(ch);
+  if (arr40.length === 40) {
+    pixels = pixels.concat("\n").concat(arr40);
+    arr40 = "";
+  }
+}
+
+function getChar(cycleId: number, regPos: number) {
+  if (cycleId <= 240) {
+    if (Math.abs(regPos - (cycleId % 40)) < 2) {
+      return "#";
+    }
+    return ".";
+  }
+  return "";
+}
+
+function getPic(instns: string[]): void {
+  let x: number = 1;
+  let cycles: number = 0;
+
+  for (let instn of instns) {
+    if (instn.startsWith("noop")) {
+      fill(getChar(cycles, x));
+      cycles++;
+    } else if (instn.startsWith("addx")) {
+      const xIncrement: number = parseInt(instn.split(" ")[1], 10);
+      fill(getChar(cycles, x));
+      cycles++;
+
+      fill(getChar(cycles, x));
+      cycles++;
+      x += xIncrement;
+    }
+  }
+}
+
+const instns: string[] = fs.readFileSync("input_day10.txt", "utf8").split("\n");
+
+getPic(instns);
+console.log(pixels);

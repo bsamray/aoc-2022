@@ -1,0 +1,111 @@
+import fs from "fs";
+
+let tracker: Map<number, Record<string, string | number>> = new Map();
+let monkeys: number[][] = [];
+let top1: number = 0;
+let top2: number = 0;
+
+function getWorryLevel(old: number, instn: string | undefined) {
+  return ~~(eval(instn as string) / 3);
+}
+
+function handleMax(n: number) {
+  if (n >= top1) {
+    top2 = top1;
+    top1 = n;
+  } else if (n < top1 && n > top2) {
+    top2 = n;
+  }
+}
+
+function initialise(allMonkeysInfo: string[]) {
+  for (let monkeyInfo of allMonkeysInfo) {
+    let monkeyId: number = 0;
+    let monkeyItems: string[] = [];
+    let operation: string = "";
+    let testWith: number = 0;
+    let successTestTo: number = -1;
+    let failTestTo: number = -1;
+
+    for (let line of monkeyInfo.split("\n")) {
+      line = line.trim();
+
+      switch (true) {
+        case line.startsWith("Monkey"):
+          monkeyId = +line.split(" ")[1].replace(":", "");
+          break;
+        case line.startsWith("Starting"):
+          monkeyItems = line.split(": ")[1].split(", ");
+          monkeyItems.forEach((x) => {
+            monkeys[monkeyId].push(+x);
+          });
+          break;
+        case line.startsWith("Operation"):
+          operation = line.slice(16).trim();
+          break;
+        case line.startsWith("Test"):
+          testWith = +line.slice(19).trim();
+          break;
+        case line.startsWith("If"):
+          if (line.includes("true")) {
+            successTestTo = +line.slice(25);
+          } else {
+            failTestTo = +line.slice(25);
+          }
+          break;
+      }
+    }
+
+    tracker.set(monkeyId, {
+      handled: 0,
+      operation,
+      testWith,
+      successTestTo,
+      failTestTo
+    });
+  }
+}
+
+function play(): void {
+  for (let i = 0; i < 20; i++) {
+    for (let j = 0; j < monkeys.length; j++) {
+      let curItemsWithMonkey: number = monkeys[j].length;
+      let monkeyObj: Record<string, string | number> = tracker.get(j) as Record<
+        string,
+        string | number
+      >;
+      for (let n = 0; n < curItemsWithMonkey; n++) {
+        let thisItem = monkeys[j].shift() as number;
+        const worryLevel: number = getWorryLevel(
+          thisItem,
+          monkeyObj["operation"] as string
+        );
+        let newOwner: number;
+        if (worryLevel % (monkeyObj["testWith"] as number) === 0) {
+          newOwner = monkeyObj["successTestTo"] as number;
+        } else {
+          newOwner = monkeyObj["failTestTo"] as number;
+        }
+        monkeys[newOwner].push(worryLevel);
+      }
+      const itemsHandledBefore = monkeyObj["handled"] as number;
+      const itemsHandledAfter = itemsHandledBefore + curItemsWithMonkey;
+      monkeyObj["handled"] = itemsHandledAfter;
+      tracker.set(j, monkeyObj);
+
+      console.log(j + "----" + itemsHandledAfter);
+      handleMax(itemsHandledAfter);
+    }
+  }
+}
+
+const allMonkeysInfo: string[] = fs
+  .readFileSync("input_day11.txt", "utf8")
+  .split("\n\n");
+
+allMonkeysInfo.forEach(() => monkeys.push([]));
+
+initialise(allMonkeysInfo);
+play();
+console.log(top1 * top2);
+
